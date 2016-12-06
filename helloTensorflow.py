@@ -60,15 +60,15 @@ def test(data,modelDir):
     		bb2 = tf.Variable(tf.zeros([10]), name="b")
 	variables=[WW1,bb1,WW2,bb2];
 	saver = tf.train.Saver(variables)
-	saver.restore(sess, "mnist/data/simple.ckpt")
+	saver.restore(sess, os.path.join(modelDir,"simple.ckpt"))
 	print(sess.run([WW1,bb1,WW2,bb2]));
 	'''
 
 	x = tf.placeholder("float", [None, 784]);
-	predictions,variabels = inference(x);
+	predictions,variables = inference(x);
 	sess = tf.Session();
-	saver = tf.train.Saver(variabels); 
-	saver.restore(sess,"model/simple.ckpt");
+	saver = tf.train.Saver(variables); 
+	saver.restore(sess,os.path.join(modelDir,"simple.ckpt"));  ###prefix the model file name with a directory name, even though it is in current directory (add './' in this case)
 	print(sess.run(tf.argmax(sess.run(predictions,feed_dict={x: test_feats}),1)));
 
 def main():
