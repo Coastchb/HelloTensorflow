@@ -8,6 +8,7 @@ tensor_zero = tf.zeros((1));
 tensor_one = tf.ones((2, 3));
 tensor_fill = tf.fill((3, 4, 5), 2);
 tensor_constant = tf.constant([[1,2,3],[4,5,6],[7,8,9]]);
+tensor_constant = tensor_constant + 1; # modifying the constant is allowed
 sim_zeros = tf.zeros_like(tensor_constant);
 sim_ones = tf.ones_like(tensor_fill);
 tensor_linear = tf.linspace(start=0.0, stop=1.0, num=3);
@@ -32,6 +33,9 @@ with tf.Session() as sess:
   print(sess.run(tensor_fill));
   print("tensor_constant:");
   print(sess.run(tensor_constant));
+  print("compare constant:");
+  print(sess.run(tf.constant(1) < tf.constant(2)));
+  print(sess.run(tf.constant(1) < 2));
   print("sim_zeros:");
   print(sess.run(sim_zeros));
   print("sim_ones:");
