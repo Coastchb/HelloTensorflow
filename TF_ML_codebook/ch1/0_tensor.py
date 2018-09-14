@@ -16,8 +16,8 @@ tensor_limit = tf.range(start=0.0, limit=1.0, delta=0.3);
 tensor_rand_u = tf.random_uniform((3,4),minval=0, maxval=3);
 tensor_rand_n = tf.random_normal((2,3), mean=0.0, stddev=1.0);
 tensor_rand_nt = tf.truncated_normal((2,3), mean=0.0, stddev=1.0);
-tensor_rand_sf = tf.random_shuffle(tensor_constant);
-tensor_rand_c = tf.random_crop(tensor_constant, (1,2));
+tensor_rand_sf = tf.random_shuffle(tensor_rand_n);
+tensor_rand_c = tf.random_crop(tensor_rand_n, (1,2));
 
 a = 1;
 tensor_a = tf.constant(a);
@@ -46,14 +46,10 @@ with tf.Session() as sess:
   print(sess.run(tensor_limit));
   print("tensor_rand_u:");
   print(sess.run(tensor_rand_u));
-  print("tensor_rand_n:");
-  print(sess.run(tensor_rand_n));
+  print("tensor_rand_n, tensor_rand_sf, tensor_rand_c:");
+  print(sess.run([tensor_rand_n, tensor_rand_sf, tensor_rand_c]));
   print("tensor_rand_nt:");
   print(sess.run(tensor_rand_nt));
-  print("tensor_rand_sf:");
-  print(sess.run(tensor_rand_sf));
-  print("tensor_rand_c:");
-  print(sess.run(tensor_rand_c));
   print("tensor_a:");
   print(sess.run(tensor_a));
   print("tensor_A:");
