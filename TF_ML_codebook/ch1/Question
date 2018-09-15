@@ -1,2 +1,9 @@
-1. tensor_a + tensor_b will put the tensors and + operation to the graph?
+1. "tensor_a + tensor_b" will put the tensors and + operation to the graph?
    What the graph looks like?
+2. How are tensors and relevant operations added to graph?
+3. if:
+  var_a = tf.Variable(2);
+  sess.run(tf.global_variables_initializer());
+  b = var_a + 1;
+
+  Will b be added to graph?
