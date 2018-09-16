@@ -12,8 +12,8 @@ iter_num = 10
 # the rael data (training samples)
 x_vals = np.concatenate((np.random.normal(-1, 1, 50), np.random.normal(3, 1, 50)))
 t_vals = np.concatenate((np.repeat(0., 50), np.repeat(1., 50)))
-batch_num = 100 / batch_size
-samples = [[x_vals[i*batch_size:(i+1)*batch_size], t_vals[i*batch_size:(i+1)*batch_size]]
+batch_num = int(100 / batch_size)
+samples = [[[[x_vals[j]] for j in range(i*batch_size,(i+1)*batch_size)], [[t_vals[j]] for j in range(i*batch_size,(i+1)*batch_size)]]
            for i in range(batch_num)]
 
 
@@ -27,14 +27,14 @@ y = tf.add(x, A, name="add")
 
 # loss and optimization function
 loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=t, logits=y)
-train_op = tf.train.GradientDescentOptimizer(learning_rate=0.05).minimize(loss)
+train_op = tf. train.GradientDescentOptimizer(learning_rate=0.05).minimize(loss)
 
 # do training
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(iter_num):
-        _samples = np.array(samples).shuffle();
+        np.random.shuffle(samples);
         for j in range(batch_num):
-            sess.run(train_op, feed_dict={x: _samples[j][0], t: _samples[j][1]})
+            sess.run(train_op, feed_dict={x: samples[j][0], t: samples[j][1]})
 
     print("In classification task,final A=%.3f" % sess.run(A))
