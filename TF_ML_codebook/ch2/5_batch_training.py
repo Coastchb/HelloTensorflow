@@ -28,10 +28,11 @@ y = tf.add(x, A, name="add")
 loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=t, logits=y))
 train_op = tf.train.GradientDescentOptimizer(learning_rate=0.05).minimize(loss)
 
-# do training
+# initialization
 sess = tf.Session()
-
 sess.run(tf.global_variables_initializer())
+
+# do training
 for i in range(iter_num):
   np.random.shuffle(samples)
   for j in range(batch_num):
@@ -41,13 +42,13 @@ for i in range(iter_num):
 
 print("In classification task,final A=%.3f" % sess.run(A))
 
+# evaluation
 test_x_vals = np.concatenate((np.random.normal(-1, 1, 100), np.random.normal(3, 1, 100)))
 test_x_vals = np.reshape(test_x_vals, (200,1), -1)
 test_t_vals = np.concatenate((np.repeat(0., 100), np.repeat(1., 100)))
 test_t_vals = np.reshape(test_t_vals, (200,1), -1)
 
-
-predict = tf.round(tf.nn.sigmoid(tf.add(x, A)))
+predict = tf.round(tf.nn.sigmoid(y))
 ret = tf.equal(predict, t)
 acc = tf.reduce_mean(tf.cast(ret, tf.float32))
 
