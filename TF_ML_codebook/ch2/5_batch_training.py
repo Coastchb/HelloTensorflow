@@ -10,7 +10,7 @@ batch_size = 20
 iter_num = 500
 
 # the rael data (training samples)
-x_vals = np.concatenate((np.random.normal(-1, 1, 50), np.random.normal(3, 1, 50)))
+x_vals = np.concatenate((np.random.normal(-1, 1, 50), np.random.normal(2, 1, 50)))
 t_vals = np.concatenate((np.repeat(0., 50), np.repeat(1., 50)))
 batch_num = int(100 / batch_size)
 samples = [[[[x_vals[j]] for j in range(i*batch_size,(i+1)*batch_size)], [[t_vals[j]] for j in range(i*batch_size,(i+1)*batch_size)]]
@@ -29,13 +29,32 @@ loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=t, logits=y
 train_op = tf.train.GradientDescentOptimizer(learning_rate=0.05).minimize(loss)
 
 # do training
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
-    for i in range(iter_num):
-        np.random.shuffle(samples);
-        for j in range(batch_num):
-            batch_loss, _ = sess.run([loss, train_op], feed_dict={x: samples[j][0], t: samples[j][1]})
-            #print(batch_loss.shape)
-            #print(batch_loss)
+sess = tf.Session()
 
-    print("In classification task,final A=%.3f" % sess.run(A))
+sess.run(tf.global_variables_initializer())
+for i in range(iter_num):
+  np.random.shuffle(samples)
+  for j in range(batch_num):
+    batch_loss, _ = sess.run([loss, train_op], feed_dict={x: samples[j][0], t: samples[j][1]})
+    #print(batch_loss.shape)
+    # #print(batch_loss)
+
+print("In classification task,final A=%.3f" % sess.run(A))
+
+test_x_vals = np.concatenate((np.random.normal(-1, 1, 100), np.random.normal(3, 1, 100)))
+test_x_vals = np.reshape(test_x_vals, (200,1), -1)
+test_t_vals = np.concatenate((np.repeat(0., 100), np.repeat(1., 100)))
+test_t_vals = np.reshape(test_t_vals, (200,1), -1)
+
+
+predict = tf.round(tf.nn.sigmoid(tf.add(x, A)))
+ret = tf.equal(predict, t)
+acc = tf.reduce_mean(tf.cast(ret, tf.float32))
+
+print("A=%.3f" % sess.run(A))
+train_acc = sess.run(acc, feed_dict={x: np.reshape(x_vals, (100,1), -1), t:np.reshape(t_vals, (100,1), -1)})
+test_acc = sess.run(acc, feed_dict={x: test_x_vals, t:test_t_vals});
+print("train acc: %.3f%%" % (train_acc*100))
+print("test acc: %.2f%%" % (test_acc*100))
+
+
