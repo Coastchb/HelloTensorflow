@@ -7,8 +7,8 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-iter_num = 100;
-batch_size = 20;
+iter_num = 750;
+batch_size = 50;
 tf.set_random_seed(5)
 np.random.seed(42)
 
