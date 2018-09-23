@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 iter_num = 50;
 batch_size = 20;
-tf.set_random_seed(9)
-np.random.seed(42)
+tf.set_random_seed(0)
+np.random.seed(0)
 
 x_vals = np.random.normal(2, 0.1, 500)
 t_vals = np.repeat(0.75, 500)
@@ -24,15 +24,15 @@ def create_model(activation, xp, yp):
     output = activation(tf.add(tf.matmul(W, tf.transpose(xp)), b))
     loss = tf.reduce_mean(tf.square(tf.subtract(tf.transpose(output), yp)))
     train_op = tf.train.GradientDescentOptimizer(0.01).minimize(loss)
-    return W, output, loss, train_op
+    return W, b, output, loss, train_op
 
 xp = tf.placeholder(tf.float32, [None,1])
 yp = tf.placeholder(tf.float32, [None,1])
 
 with tf.variable_scope("relu") as scope:
-  re_W, re_output, re_loss, re_train = create_model(tf.nn.relu, xp, yp)
+  re_W, re_b, re_output, re_loss, re_train = create_model(tf.nn.relu, xp, yp)
 with tf.variable_scope("sigmoid") as scope:
-  sg_W, sg_output, sg_loss, sg_train = create_model(tf.sigmoid, xp, yp)
+  sg_W, sg_b, sg_output, sg_loss, sg_train = create_model(tf.sigmoid, xp, yp)
 
 sess = tf.Session()
 summary_writer = tf.summary.FileWriter('tensorboard',
@@ -52,9 +52,9 @@ sg_losses = []
 for i in range(iter_num):
     np.random.shuffle(samples)
     for j in range(batch_num):
-        [[s_w]], s_output, s_loss, _ = sess.run([sg_W, sg_output, sg_loss, sg_train],
+        [[s_w]], [[s_b]], s_output, s_loss, _ = sess.run([sg_W, sg_b, sg_output, sg_loss, sg_train],
                                                 feed_dict={xp: samples[j][0], yp: samples[j][1]})
-        [[r_w]], r_output, r_loss, _ = sess.run([re_W, re_output, re_loss, re_train],
+        [[r_w]], [[r_b]], r_output, r_loss, _ = sess.run([re_W, re_b, re_output, re_loss, re_train],
                                                 feed_dict={xp:samples[j][0], yp: samples[j][1]})
         re_Ws.append(r_w)
         sg_Ws.append(s_w)
@@ -62,8 +62,8 @@ for i in range(iter_num):
         sg_outputs.append(np.mean(s_output))
         re_losses.append(r_loss)
         sg_losses.append(s_loss)
-        print("re_w: %.3f" % r_w)
-        print("sg_w: %.3f" % s_w)
+        print("re_w: %.3f, re_b: %.3f" % (r_w, r_b))
+        print("sg_w: %.3f, sg_b: %.3f" % (s_w, s_b))
 
 plt.title("weights")
 plt.xlabel("iter")

@@ -7,7 +7,7 @@ import tensorflow as tf
 from sklearn import datasets
 import matplotlib.pyplot as plt
 
-seed = 2
+seed = 0
 batch_size = 50
 num_iter = 500
 num_hidden_layers = 2
