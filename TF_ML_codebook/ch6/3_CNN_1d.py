@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 seed = 0
-batch_size = 50
+batch_size = 20
 num_iter = 1000
 input_dim = 20
 output_dim = 1
@@ -19,7 +19,8 @@ tf.set_random_seed(seed)
 x_vals = np.random.normal(2.0, 1.0, (num_samples, input_dim))
 t_vals = np.repeat(0.75, num_samples).reshape((num_samples,1))
 
-x_data = tf.placeholder(tf.float32, shape=(None,input_dim,1))
+raw_data = tf.placeholder(tf.float32, shape=(None,input_dim))
+x_data = tf.expand_dims(raw_data, -1)
 t_data = tf.placeholder(tf.float32, shape=(None,1))
 fc_w = tf.Variable(tf.random_normal((10,1)))
 fc_b = tf.Variable(tf.random_normal(()))
@@ -40,10 +41,10 @@ x_test_input = np.random.normal(2.0, 1.0, (100, input_dim))
 
 for i in range(num_iter):
     train_indices = np.random.choice(num_samples, batch_size)
-    train_loss, _ = sess.run((loss,train_op), feed_dict={x_data:np.expand_dims(x_vals[train_indices],-1),t_data:t_vals[train_indices]})
+    train_loss, _ = sess.run((loss,train_op), feed_dict={raw_data:x_vals[train_indices],t_data:t_vals[train_indices]})
     train_losses.append(train_loss)
 
-test_pre = sess.run(fc_output,feed_dict={x_data:np.expand_dims(x_vals[train_indices],-1)})
+test_pre = sess.run(fc_output,feed_dict={raw_data:x_vals[train_indices]})
 
 plt.title('Loss')
 plt.xlabel('iter')
