@@ -79,8 +79,3 @@ plt.plot(train_loss, 'r-', label='train loss')
 plt.plot(test_loss, 'b--', label="test loss")
 plt.legend(loc='upper right')
 plt.show()
-
-
-
-
-
