@@ -7,17 +7,11 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-<<<<<<< Updated upstream
-iter_num = 50;
-batch_size = 20;
-tf.set_random_seed(0)
-np.random.seed(0)
-=======
+
 iter_num = 750;
 batch_size = 50;
 tf.set_random_seed(9)
 np.random.seed(42)
->>>>>>> Stashed changes
 
 x_vals = np.random.normal(2, 0.1, 500)
 t_vals = np.repeat(0.75, 500)
@@ -57,22 +51,6 @@ re_losses = []
 sg_losses = []
 
 for i in range(iter_num):
-<<<<<<< Updated upstream
-    np.random.shuffle(samples)
-    for j in range(batch_num):
-        [[s_w]], [[s_b]], s_output, s_loss, _ = sess.run([sg_W, sg_b, sg_output, sg_loss, sg_train],
-                                                feed_dict={xp: samples[j][0], yp: samples[j][1]})
-        [[r_w]], [[r_b]], r_output, r_loss, _ = sess.run([re_W, re_b, re_output, re_loss, re_train],
-                                                feed_dict={xp:samples[j][0], yp: samples[j][1]})
-        re_Ws.append(r_w)
-        sg_Ws.append(s_w)
-        re_outputs.append(np.mean(r_output))
-        sg_outputs.append(np.mean(s_output))
-        re_losses.append(r_loss)
-        sg_losses.append(s_loss)
-        print("re_w: %.3f, re_b: %.3f" % (r_w, r_b))
-        print("sg_w: %.3f, sg_b: %.3f" % (s_w, s_b))
-=======
     train_indices = np.random.choice(len(x_vals),size=batch_size)
     [[s_w]], s_output, s_loss, _ = sess.run([sg_W, sg_output, sg_loss, sg_train],
                                             feed_dict={xp: np.transpose([x_vals[train_indices]]), yp: np.transpose([t_vals[train_indices]])})
@@ -86,7 +64,6 @@ for i in range(iter_num):
     sg_losses.append(s_loss)
     print("re_w: %.3f" % r_w)
     print("sg_w: %.3f" % s_w)
->>>>>>> Stashed changes
 
 plt.title("weights")
 plt.xlabel("iter")
