@@ -54,3 +54,6 @@ with tf.Session() as sess:
   print(sess.run(tensor_a));
   print("tensor_A:");
   print(sess.run(tensor_A));
+  print((tensor_a*2))
+  print((tensor_a*2).shape)
+  print(sess.run(tensor_a*2))

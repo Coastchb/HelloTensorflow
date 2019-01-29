@@ -72,8 +72,12 @@ def parse_example(example_proto):
 dataset = tf.data.TFRecordDataset(tfr_file)
 
 dataset = dataset.map(parse_example)
+print(dataset)
 dataset = dataset.batch(10)
+print(dataset)
 iterator = dataset.make_one_shot_iterator()
 next_element = iterator.get_next()
+print(next_element)
+print(next_element['F0'])
 sess = tf.Session()
 print(sess.run(next_element))

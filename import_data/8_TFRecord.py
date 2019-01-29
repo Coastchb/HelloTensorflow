@@ -36,10 +36,13 @@ def parse_example(example_proto):
     return tf.parse_single_example(example_proto, example)
 
 dataset = tf.data.TFRecordDataset(image_tfr)
+print(dataset)
 dataset = dataset.map(parse_example)
+print(dataset)
 iter = dataset.make_one_shot_iterator()
 next_element = iter.get_next()
-
+print(next_element)
+print(next_element['row1'][1])
 input = []
 input.append(next_element['row1'])
 input.append(next_element['row2'])
