@@ -23,6 +23,25 @@ a = 1;
 tensor_a = tf.constant(a);
 tensor_A = tf.convert_to_tensor(a);
 
+tensor_var = tf.constant([[[0,1,2],
+  [3,4,5],
+  [0,0,0],
+  [0,0,0]],
+ [[6,7,8],
+  [9,10,11],
+  [12,13,14],
+  [0,0,0]],
+ [[15,16,17],
+  [18,19,20],
+  [21,22,23],
+  [24,25,26]]])
+
+def get_target_in_axis1(input, dims):
+  output = []
+  for (x,d) in zip(input,dims):
+    output.append(x[d])
+  return output
+
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer());
   print("tensor_zero:");
@@ -57,3 +76,21 @@ with tf.Session() as sess:
   print((tensor_a*2))
   print((tensor_a*2).shape)
   print(sess.run(tensor_a*2))
+
+  print(sess.run(tensor_fill[:,-1,:]))
+
+  print(sess.run(tensor_var))
+  output_types = [tf.int32] * 3
+  output = tf.py_func(get_target_in_axis1,[tensor_var,[1,2,3]],output_types)
+  print(sess.run(output))
+  print(sess.run(output * 3))
+
+  batch_size = 3
+  max_len = 4
+  output1 = tf.tile(tf.reshape(tf.convert_to_tensor([output]),(batch_size,1,3)),(1, max_len, 1))
+  print(sess.run(output1))
+
+  concat_tensor = tf.concat((tensor_var, output1), axis=-1)
+  print(len(concat_tensor.shape))
+  print(concat_tensor.shape)
+  assert concat_tensor.shape == (3,4,6)

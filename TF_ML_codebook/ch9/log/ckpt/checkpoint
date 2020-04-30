@@ -1,0 +1,6 @@
+model_checkpoint_path: "rnn-ckpt-359"
+all_model_checkpoint_paths: "rnn-ckpt-287"
+all_model_checkpoint_paths: "rnn-ckpt-305"
+all_model_checkpoint_paths: "rnn-ckpt-323"
+all_model_checkpoint_paths: "rnn-ckpt-341"
+all_model_checkpoint_paths: "rnn-ckpt-359"

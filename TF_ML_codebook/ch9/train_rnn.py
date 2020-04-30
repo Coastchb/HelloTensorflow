@@ -22,6 +22,7 @@ embedding_size = 50
 min_word_frequency = 10
 learning_rate = 0.0005
 
+ckpt_dir = "log/ckpt"
 #####################################
 # load and preprocess the real data #
 #####################################
@@ -112,30 +113,55 @@ def inference():
                                                              1), tf.cast(y_output, tf.int64)), tf.float32), name="accuracy")
         return logits_out, loss, accuracy
 
-
-with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
-    logits, loss, acc = inference()
-    optimizer = tf.train.RMSPropOptimizer(learning_rate)
-    train_op = optimizer.minimize(loss)
+def create_model(global_steps):
+    with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
+        logits, loss, acc = inference()
+        optimizer = tf.train.RMSPropOptimizer(learning_rate)
+        train_op = optimizer.minimize(loss, global_step=global_steps)
+        return logits, loss, acc, train_op
 
 ##################
 # start training #
 ##################
 
+global_steps = tf.train.get_or_create_global_step()
+logits, loss, acc, train_op = create_model(global_steps)
+
 saver = tf.train.Saver()
 with tf.Session() as sess:
+    try:
+        checkpoint_state = tf.train.get_checkpoint_state(ckpt_dir)
+        if (checkpoint_state and checkpoint_state.model_checkpoint_path):
+            print('Loading checkpoint {}'.format(checkpoint_state.model_checkpoint_path))
+            checkpoint_path = checkpoint_state.model_checkpoint_path
+            #saver = tf.train.import_meta_graph(checkpoint_path + ".meta")
+            saver.restore(sess, checkpoint_path)
+        else:
+            print('No model to load at {}'.format(ckpt_dir))
+            sess.run(tf.global_variables_initializer())
+    except tf.errors.OutOfRangeError as e:
+        print('Cannot restore checkpoint: {}'.format(e))
+
+
     # add training loss to summary
     summary_writer = tf.summary.FileWriter('log/train', sess.graph)
     tf.summary.scalar("training_loss", loss)
     train_summary = tf.summary.merge_all()
 
-    sess.run(tf.global_variables_initializer())
-    for epoch in range(epochs):
+    training_finished = False
+    while(not training_finished):
         shuffled_ix = np.random.permutation(np.arange(len(x_train)))
         x_train = x_train[shuffled_ix]
         y_train = y_train[shuffled_ix]
         num_batches = int(len(x_train)/batch_size) + 1
         for i in range(num_batches):
+            step = sess.run(global_steps)
+            if (step >= epochs * num_batches):
+                print("Training reaches the max training step!")
+                training_finished = True
+                break
+
+            print("training step: %d" % step)
             min_ix = i * batch_size
             max_ix = np.min((len(x_train), ((i+1) * batch_size)))
             x_train_batch = x_train[min_ix:max_ix]
@@ -144,8 +170,11 @@ with tf.Session() as sess:
             train_dict = {x_data:x_train_batch, y_output:y_train_batch, dropout_keep_prob:0.5}
             sess.run(train_op, feed_dict=train_dict)
 
+        if(training_finished):
+            break
+
         # run training summary
-        summary_writer.add_summary(sess.run(train_summary, feed_dict = train_dict), epoch)
+        summary_writer.add_summary(sess.run(train_summary, feed_dict = train_dict), step)
 
 
         test_dict = {x_data: x_test, y_output: y_test, dropout_keep_prob: 1.0}
@@ -153,10 +182,11 @@ with tf.Session() as sess:
         # add test loss to summary
         values = [tf.Summary.Value(tag='testing_loss', simple_value=temp_test_loss), ]
         test_summary = tf.Summary(value=values)
-        summary_writer.add_summary(test_summary, epoch)
+        summary_writer.add_summary(test_summary, step)
 
         # save ckpt
-        saver.save(sess, "log/ckpt/rnn-ckpt", global_step=epoch)
+        saver.save(sess, os.path.join(ckpt_dir, "rnn-ckpt"), global_step=step)
+        print("checkpoint-%d stored" % step)
 
 summary_writer.close()
 

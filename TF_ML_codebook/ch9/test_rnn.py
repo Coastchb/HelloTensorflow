@@ -100,5 +100,5 @@ with tf.Session() as sess:
     x_data = graph.get_tensor_by_name("x_data:0")
     y_output = graph.get_tensor_by_name("y_output:0")
     dropout_keep_prob = graph.get_tensor_by_name("dropout_keep_prob:0")
-    acc = sess.run([get_accuracy], feed_dict={x_data:x_test, y_output:y_test, dropout_keep_prob: 1.0})
-    print(acc)
+    acc = sess.run(get_accuracy, feed_dict={x_data:x_test, y_output:y_test, dropout_keep_prob: 1.0})
+    print("test acc:%f" % acc)
